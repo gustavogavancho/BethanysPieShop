@@ -2,6 +2,7 @@ using System;
 using BethanysPieShop.Data;
 using BethanysPieShop.Models;
 using BethanysPieShop.Models.Repositories;
+using BethanysPieShop.Models.Seeder;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -34,9 +35,16 @@ namespace BethanysPieShop
                 .AddDefaultUI().
                 AddEntityFrameworkStores<AppDbContext>();
 
+            services.Configure<IdentityOptions>(opts =>
+            {
+                opts.User.RequireUniqueEmail = true;
+            });
+
             services.AddScoped<IPieRepository, PieRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
+
+            services.AddAntiforgery();
 
             services.AddScoped<ShoppingCart>(sp => ShoppingCart.GetCart(sp));
             services.AddHttpContextAccessor();
@@ -52,7 +60,7 @@ namespace BethanysPieShop
             });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AppDbContext context)
         {
             if (env.IsDevelopment())
             {
@@ -75,6 +83,9 @@ namespace BethanysPieShop
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
+
+            SeedData.SeedDatabase(context);
+            IdentitySeedData.CreateAdminAccount(app.ApplicationServices, Configuration);
         }
     }
 }

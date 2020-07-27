@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<!DOCTYPE html>
 
 <html lang="es">
 <head>
@@ -28,7 +31,10 @@
                     @await Component.InvokeAsync("CategoryMenu")
                     <li><a asp-controller="Contact" asp-action="Index">Contact</a></li>
                     @await Component.InvokeAsync("ShoppingCartSummary")
-                    @await Component.InvokeAsync("AdminMenu")
+                    @if (SignInManager.IsSignedIn(User) && User.IsInRole("Administrator"))
+                    {
+                        @await Component.InvokeAsync("AdminMenu")
+                    }
                 </ul>
                 <partial name="_LoginPartial" />
             </div>
