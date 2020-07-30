@@ -197,7 +197,7 @@ namespace BethanysPieShop.Migrations
                     PieId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(nullable: true),
-                    ShortDescription = table.Column<string>(nullable: true),
+                    ShortDescription = table.Column<string>(maxLength: 100, nullable: true),
                     LongDescription = table.Column<string>(nullable: true),
                     AllergyInformation = table.Column<string>(nullable: true),
                     Price = table.Column<decimal>(nullable: false),
@@ -206,7 +206,7 @@ namespace BethanysPieShop.Migrations
                     IsPieOfTheWeek = table.Column<bool>(nullable: false),
                     InStock = table.Column<bool>(nullable: false),
                     CategoryId = table.Column<int>(nullable: false),
-                    Notes = table.Column<string>(nullable: true)
+                    SugarLevel = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -241,6 +241,47 @@ namespace BethanysPieShop.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_OrderDetails_Pies_PieId",
+                        column: x => x.PieId,
+                        principalTable: "Pies",
+                        principalColumn: "PieId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PieReviews",
+                columns: table => new
+                {
+                    PieReviewId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PieId = table.Column<int>(nullable: true),
+                    Review = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PieReviews", x => x.PieReviewId);
+                    table.ForeignKey(
+                        name: "FK_PieReviews_Pies_PieId",
+                        column: x => x.PieId,
+                        principalTable: "Pies",
+                        principalColumn: "PieId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RecipeInformation",
+                columns: table => new
+                {
+                    RecipeInformationId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PreparationDirections = table.Column<string>(nullable: true),
+                    Duration = table.Column<int>(nullable: false),
+                    PieId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RecipeInformation", x => x.RecipeInformationId);
+                    table.ForeignKey(
+                        name: "FK_RecipeInformation_Pies_PieId",
                         column: x => x.PieId,
                         principalTable: "Pies",
                         principalColumn: "PieId",
@@ -318,9 +359,20 @@ namespace BethanysPieShop.Migrations
                 column: "PieId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PieReviews_PieId",
+                table: "PieReviews",
+                column: "PieId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Pies_CategoryId",
                 table: "Pies",
                 column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RecipeInformation_PieId",
+                table: "RecipeInformation",
+                column: "PieId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ShoppingCartItems_PieId",
@@ -347,6 +399,12 @@ namespace BethanysPieShop.Migrations
 
             migrationBuilder.DropTable(
                 name: "OrderDetails");
+
+            migrationBuilder.DropTable(
+                name: "PieReviews");
+
+            migrationBuilder.DropTable(
+                name: "RecipeInformation");
 
             migrationBuilder.DropTable(
                 name: "ShoppingCartItems");

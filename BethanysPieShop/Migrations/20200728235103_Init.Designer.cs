@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BethanysPieShop.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20200725202607_Init")]
+    [Migration("20200728235103_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -163,20 +163,65 @@ namespace BethanysPieShop.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ShortDescription")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<int>("SugarLevel")
+                        .HasColumnType("int");
 
                     b.HasKey("PieId");
 
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Pies");
+                });
+
+            modelBuilder.Entity("BethanysPieShop.Models.PieReview", b =>
+                {
+                    b.Property<int>("PieReviewId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("PieId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Review")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("PieReviewId");
+
+                    b.HasIndex("PieId");
+
+                    b.ToTable("PieReviews");
+                });
+
+            modelBuilder.Entity("BethanysPieShop.Models.RecipeInformation", b =>
+                {
+                    b.Property<int>("RecipeInformationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("Duration")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PieId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PreparationDirections")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("RecipeInformationId");
+
+                    b.HasIndex("PieId")
+                        .IsUnique();
+
+                    b.ToTable("RecipeInformation");
                 });
 
             modelBuilder.Entity("BethanysPieShop.Models.ShoppingCartItem", b =>
@@ -418,6 +463,22 @@ namespace BethanysPieShop.Migrations
                     b.HasOne("BethanysPieShop.Models.Category", "Category")
                         .WithMany("Pies")
                         .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BethanysPieShop.Models.PieReview", b =>
+                {
+                    b.HasOne("BethanysPieShop.Models.Pie", "Pie")
+                        .WithMany("PieReviews")
+                        .HasForeignKey("PieId");
+                });
+
+            modelBuilder.Entity("BethanysPieShop.Models.RecipeInformation", b =>
+                {
+                    b.HasOne("BethanysPieShop.Models.Pie", "Pie")
+                        .WithOne("RecipeInformation")
+                        .HasForeignKey("BethanysPieShop.Models.RecipeInformation", "PieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

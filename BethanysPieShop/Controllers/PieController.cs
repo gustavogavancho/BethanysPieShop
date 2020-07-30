@@ -4,6 +4,7 @@ using BethanysPieShop.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Encodings.Web;
 
 namespace BethanysPieShop.Controllers
 {
@@ -11,11 +12,15 @@ namespace BethanysPieShop.Controllers
     {
         private readonly IPieRepository _pieRepository;
         private readonly ICategoryRepository _categoryRepository;
+        private readonly IPieReviewRepository _pieReviewRepository;
+        private readonly HtmlEncoder _htmlEncoder;
 
-        public PieController(IPieRepository pieRepository, ICategoryRepository categoryRepository)
+        public PieController(IPieRepository pieRepository, ICategoryRepository categoryRepository, IPieReviewRepository pieReviewRepository, HtmlEncoder htmlEncoder)
         {
             _pieRepository = pieRepository;
             _categoryRepository = categoryRepository;
+            _pieReviewRepository = pieReviewRepository;
+            _htmlEncoder = htmlEncoder;
         }
 
         public ViewResult List(string category)
@@ -42,7 +47,7 @@ namespace BethanysPieShop.Controllers
             });
         }
 
-
+        [Route("[controller]/Details/{id}")]
         public IActionResult Details(int id)
         {
             var pie = _pieRepository.GetPieById(id);
@@ -50,7 +55,22 @@ namespace BethanysPieShop.Controllers
             {
                 return NotFound();
             }
-            return View(pie);
+            return View(new PieDetailViewModel() { Pie = pie });
+        }
+
+        [Route("[controller]/Details/{id}")]
+        [HttpPost]
+        public IActionResult Details(int id, string review)
+        {
+            var pie = _pieRepository.GetPieById(id);
+            if (pie == null)
+            {
+                return NotFound();
+            }
+            string encodedReview = _htmlEncoder.Encode(review);
+            _pieReviewRepository.AddPieReview(new PieReview() { Pie = pie, Review = encodedReview });
+
+            return View(new PieDetailViewModel() { Pie = pie });
         }
     }
 }

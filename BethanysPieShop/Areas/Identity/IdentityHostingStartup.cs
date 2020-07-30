@@ -1,4 +1,11 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System;
+using BethanysPieShop.Data;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 [assembly: HostingStartup(typeof(BethanysPieShop.Areas.Identity.IdentityHostingStartup))]
 namespace BethanysPieShop.Areas.Identity

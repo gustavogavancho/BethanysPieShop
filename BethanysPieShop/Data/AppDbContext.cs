@@ -12,7 +12,17 @@ namespace BethanysPieShop.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<ShoppingCartItem> ShoppingCartItems { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<PieReview> PieReviews { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            builder.Entity<Pie>()
+                .HasOne(p => p.RecipeInformation)
+                .WithOne(i => i.Pie)
+                .HasForeignKey<RecipeInformation>(b => b.PieId);
+        }
 
         //protected override void OnModelCreating(ModelBuilder modelBuilder)
         //{

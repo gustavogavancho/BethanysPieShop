@@ -5,6 +5,7 @@ using BethanysPieShop.Models.Repositories;
 using BethanysPieShop.Models.Seeder;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -32,8 +33,8 @@ namespace BethanysPieShop
 
             services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddDefaultTokenProviders()
-                .AddDefaultUI().
-                AddEntityFrameworkStores<AppDbContext>();
+                .AddDefaultUI()
+                .AddEntityFrameworkStores<AppDbContext>();
 
             services.Configure<IdentityOptions>(opts =>
             {
@@ -42,7 +43,9 @@ namespace BethanysPieShop
 
             services.AddScoped<IPieRepository, PieRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddTransient<IPieReviewRepository, PieReviewRepository>();
 
             services.AddAntiforgery();
 

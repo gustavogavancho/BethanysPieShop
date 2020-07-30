@@ -33,7 +33,11 @@
                     @await Component.InvokeAsync("ShoppingCartSummary")
                     @if (SignInManager.IsSignedIn(User) && User.IsInRole("Administrator"))
                     {
-                        @await Component.InvokeAsync("AdminMenu")
+                        <vc:admin-menu />
+
+                        <li class="dropdown">
+                            <a asp-controller="PieManagement" asp-action="Index">Pie Management</a>
+                        </li>
                     }
                 </ul>
                 <partial name="_LoginPartial" />
